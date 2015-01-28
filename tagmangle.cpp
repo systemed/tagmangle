@@ -41,7 +41,9 @@ int main(int argc, char* argv[]) {
 	writeBlock(&block, &outfile, "OSMHeader");
 
 	PrimitiveBlock pb;
+	Way way;
 	vector<string> strings(0);
+	PrimitiveGroup pg;
 	while (!infile.eof()) {
 		readBlock(&pb, &infile);
 		readStringTable(&strings, &pb);
@@ -49,10 +51,10 @@ int main(int argc, char* argv[]) {
 
 		// Read ways
 		for (uint i=0; i<pb.primitivegroup_size(); i++) {
-			PrimitiveGroup pg = pb.primitivegroup(i);
+			pg = pb.primitivegroup(i);
 			if (pg.ways_size()>0) {
 				for (uint j=0; j<pg.ways_size(); j++) {
-					Way way = pg.ways(j);
+					way = pg.ways(j);
 					if (replace_list.find(way.id()) != replace_list.end()) {
 						setTag(&way, replaceIndex, replace_list[way.id()], &pb);
 //						map<string, string> tags = getTags(&strings, &way);
