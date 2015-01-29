@@ -99,14 +99,13 @@ uint findStringInTable(string *strPtr, map<string, int> *mapPtr, PrimitiveBlock 
 }
 
 // Set a tag for a way to a new value
-void setTag(Way *wayPtr, map<string, int> *mapPtr, uint keyIndex, string str, PrimitiveBlock *pbPtr) {
-	uint valueIndex = findStringInTable(&str, mapPtr, pbPtr);
+void setTag(Way *wayPtr, uint keyIndex, uint valueIndex) {
 	for (uint i=0; i<wayPtr->keys_size(); i++) {
 		if (wayPtr->keys(i)==keyIndex) {
-			wayPtr->set_vals(i,valueIndex);
+			wayPtr->mutable_vals()->Set(i,valueIndex);
 			return;
 		}
 	}
-	wayPtr->add_keys(keyIndex);
-	wayPtr->add_vals(valueIndex);
+	wayPtr->mutable_keys()->Add(keyIndex);
+	wayPtr->mutable_vals()->Add(valueIndex);
 }

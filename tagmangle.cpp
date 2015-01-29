@@ -50,8 +50,9 @@ int main(int argc, char* argv[]) {
 		readStringTable(&strings, &pb);
 		map<string, int> tagMap;
 		readStringMap(&tagMap, &pb);
-		uint replaceIndex=findStringInTable(&replace_key, &tagMap, &pb);
-		cout << "Block " << ct << " size " << pb.primitivegroup_size() << endl;
+		uint keyIndex=findStringInTable(&replace_key, &tagMap, &pb);
+		cout << "Block " << ct << " size " << pb.primitivegroup_size() << "  \r";
+		cout.flush();
 		ct++;
 
 		// Read ways
@@ -61,10 +62,8 @@ int main(int argc, char* argv[]) {
 				for (uint j=0; j<pg.ways_size(); j++) {
 					way = pg.ways(j);
 					if (replace_list.find(way.id()) != replace_list.end()) {
-						setTag(&way, &tagMap, replaceIndex, replace_list[way.id()], &pb);
-//						map<string, string> tags = getTags(&strings, &way);
-//						cout << way.id() << " " << tags[replace_key] << endl;
-//						cout << "-- replace with " << replace_list[way.id()] << endl;
+						uint valueIndex = findStringInTable(&replace_list[way.id()], &tagMap, &pb);
+						setTag(pb.mutable_primitivegroup(i)->mutable_ways(j), keyIndex, valueIndex);
 					}
 				}
 			}
@@ -77,5 +76,5 @@ int main(int argc, char* argv[]) {
 	google::protobuf::ShutdownProtobufLibrary();
 	infile.close();
 	outfile.close();
+	cout << endl;
 }
-
