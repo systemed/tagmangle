@@ -37,6 +37,7 @@ void writeBlock(google::protobuf::Message *messagePtr, fstream *outputPtr, strin
 	messagePtr->SerializeToString(&serialised);
 	// create a blob and store it
 	Blob blob;
+	blob.set_raw_size(serialised.length());
 	blob.set_zlib_data(compress_string(serialised));
 	// encode the blob
 	string blob_encoded;
@@ -70,6 +71,13 @@ void readStringTable(vector<string> *strPtr, PrimitiveBlock *pbPtr) {
 	}
 }
 
+// Populate a map with the reverse contents of a StringTable (i.e. string->num)
+void readStringMap(map<string, int> *mapPtr, PrimitiveBlock *pbPtr) {
+	for (uint i=0; i<pbPtr->stringtable().s_size(); i++) {
+		mapPtr->insert(pair<string, int> (pbPtr->stringtable().s(i), i));
+	}
+}
+
 // Read the tags for a way into a hash
 // requires strings array to have been populated by readStringTable
 map<string, string> getTags(vector<string> *strPtr, Way *wayPtr) {
@@ -81,17 +89,18 @@ map<string, string> getTags(vector<string> *strPtr, Way *wayPtr) {
 }
 
 // Find the index of a string in the StringTable, adding it if it's not there
-uint findStringInTable(string *strPtr, PrimitiveBlock *pbPtr) {
-	for (uint i=0; i<pbPtr->stringtable().s_size(); i++) {
-		if (pbPtr->stringtable().s(i) == *strPtr) { return i; }
+uint findStringInTable(string *strPtr, map<string, int> *mapPtr, PrimitiveBlock *pbPtr) {
+	if (mapPtr->find(*strPtr) == mapPtr->end()) {
+		pbPtr->mutable_stringtable()->add_s(*strPtr);
+		uint ix = pbPtr->stringtable().s_size()-1;
+		mapPtr->insert(pair<string, int> (*strPtr, ix));
 	}
-	pbPtr->mutable_stringtable()->add_s(*strPtr);
-	return pbPtr->stringtable().s_size()-1;
+	return mapPtr->at(*strPtr);
 }
 
 // Set a tag for a way to a new value
-void setTag(Way *wayPtr, uint keyIndex, string str, PrimitiveBlock *pbPtr) {
-	uint valueIndex = findStringInTable(&str, pbPtr);
+void setTag(Way *wayPtr, map<string, int> *mapPtr, uint keyIndex, string str, PrimitiveBlock *pbPtr) {
+	uint valueIndex = findStringInTable(&str, mapPtr, pbPtr);
 	for (uint i=0; i<wayPtr->keys_size(); i++) {
 		if (wayPtr->keys(i)==keyIndex) {
 			wayPtr->set_vals(i,valueIndex);

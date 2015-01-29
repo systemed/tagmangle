@@ -44,10 +44,15 @@ int main(int argc, char* argv[]) {
 	Way way;
 	vector<string> strings(0);
 	PrimitiveGroup pg;
+	uint ct=0;
 	while (!infile.eof()) {
 		readBlock(&pb, &infile);
 		readStringTable(&strings, &pb);
-		uint replaceIndex=findStringInTable(&replace_key, &pb);
+		map<string, int> tagMap;
+		readStringMap(&tagMap, &pb);
+		uint replaceIndex=findStringInTable(&replace_key, &tagMap, &pb);
+		cout << "Block " << ct << " size " << pb.primitivegroup_size() << endl;
+		ct++;
 
 		// Read ways
 		for (uint i=0; i<pb.primitivegroup_size(); i++) {
@@ -56,7 +61,7 @@ int main(int argc, char* argv[]) {
 				for (uint j=0; j<pg.ways_size(); j++) {
 					way = pg.ways(j);
 					if (replace_list.find(way.id()) != replace_list.end()) {
-						setTag(&way, replaceIndex, replace_list[way.id()], &pb);
+						setTag(&way, &tagMap, replaceIndex, replace_list[way.id()], &pb);
 //						map<string, string> tags = getTags(&strings, &way);
 //						cout << way.id() << " " << tags[replace_key] << endl;
 //						cout << "-- replace with " << replace_list[way.id()] << endl;
