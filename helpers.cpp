@@ -6,6 +6,8 @@
 #include <cstring>
 #include <zlib.h>
 
+// General helper routines
+
 inline void endian_swap(unsigned int& x) {
 	x = (x>>24) | 
         ((x<<8) & 0x00FF0000) |
@@ -13,13 +15,16 @@ inline void endian_swap(unsigned int& x) {
         (x<<24);
 }
 
-/* zlib routines from http://panthema.net/2007/0328-ZLibString.html */
+inline bool ends_with(std::string const & value, std::string const & ending) {
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
 
-/** Compress a STL string using zlib with given compression level and return
-  * the binary data. */
+// zlib routines from http://panthema.net/2007/0328-ZLibString.html
+
+// Compress a STL string using zlib with given compression level, and return the binary data
 std::string compress_string(const std::string& str,
-                            int compressionlevel = Z_DEFAULT_COMPRESSION)
-{
+                            int compressionlevel = Z_DEFAULT_COMPRESSION) {
     z_stream zs;                        // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
 
@@ -58,9 +63,8 @@ std::string compress_string(const std::string& str,
     return outstring;
 }
 
-/** Decompress an STL string using zlib and return the original data. */
-std::string decompress_string(const std::string& str)
-{
+// Decompress an STL string using zlib and return the original data.
+std::string decompress_string(const std::string& str) {
     z_stream zs;                        // z_stream is zlib's control structure
     memset(&zs, 0, sizeof(zs));
 
