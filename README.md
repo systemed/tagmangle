@@ -8,11 +8,17 @@ You can apply several text files to one pbf in the same run, if you have multipl
 
 ## Compiling
 
-You'll need the protobuf library. On OS X you can install this with Homebrew with `brew install protobuf`.
+You'll need the protobuf library. On OS X you can install this with Homebrew with `brew install protobuf`. On Ubuntu, `apt-get libprotobuf-dev protobuf-compiler`.
 
 You can then compile tagmangle like this:
 
      clang++ -o tagmangle osmformat.pb.cc tagmangle.cpp -std=c++11 -lz `pkg-config --cflags --libs protobuf`
+
+If you receive compilation errors related to protobuf, try recompiling the .pbf reader:
+
+     protoc --cpp_out=. osmformat.proto
+
+and then building tagmangle again.
 
 ## Running
 
@@ -34,6 +40,6 @@ It doesn't check whether the PBF block size would be exceeded. In practice this 
 
 The PBF handling code in pbf_blocks.cpp might be useful as an absolute bare-bones PBF parser for similar projects.
 
-You don't need osmformat.proto but it's included in case you want to recompile using protoc. Note that BlobHeader and Blob have been added to the commonly-used version.
+Note that BlobHeader and Blob have been added to the commonly-used version of osmformat.proto.
 
 Richard Fairhurst, January 2015
