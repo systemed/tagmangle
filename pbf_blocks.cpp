@@ -15,7 +15,7 @@ void readBlock(google::protobuf::Message *messagePtr, fstream *inputPtr) {
 	// read the header length
 	unsigned int size;
 	inputPtr->read((char*)&size, sizeof(size));
-	if (inputPtr->eof()) { return; }
+	if (inputPtr->eof()) { messagePtr->Clear(); return; }
 	endian_swap(size);
 
 	// get BlobHeader and parse
