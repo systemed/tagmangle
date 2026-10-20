@@ -29,17 +29,17 @@ int main(int argc, char* argv[]) {
 		string replace_key = argv[i];
 		string replace_fn = argv[i+1];
 
-		fstream replacefile(replace_fn, ios::in);
+		gzFile replacefile = gzopen(replace_fn.c_str(), "rb");
 		if (!replacefile) { cerr << "Couldn't open replacements file " << replace_fn << endl; return -1; }
 		cout << "Reading replacements for " << replace_key << " from " << replace_fn << endl;
 
 		string line;
-		while (getline(replacefile,line)) {
+		while (gzGetLine(replacefile,line)) {
 			string id =line.substr(0, line.find(" "));
 			string val=line.substr(line.find(" ")+1);
 			replace_list[replace_key][atoi(id.c_str())] = val;
 		}
-		replacefile.close();
+		gzclose(replacefile);
 	}
 
 	// Copy pbf header

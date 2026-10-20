@@ -103,3 +103,15 @@ std::string decompress_string(const std::string& str) {
 
     return outstring;
 }
+
+// Read a line from a file opened with gzopen (which reads both gzipped and plain text).
+// Returns false at end of file.
+bool gzGetLine(gzFile file, std::string& line) {
+	line.clear();
+	char buffer[4096];
+	while (gzgets(file, buffer, sizeof(buffer)) != Z_NULL) {
+		line += buffer;
+		if (!line.empty() && line.back()=='\n') { line.pop_back(); return true; }
+	}
+	return !line.empty();
+}

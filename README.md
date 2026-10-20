@@ -16,7 +16,7 @@ You can then compile tagmangle like this:
 
 ## Running
 
-Create a text file with each way ID and its value on a new line, separated by a space. See example.txt for an example.
+Create a text file with each way ID and its value on a new line, separated by a space. See example.txt for an example. The file can be plain text or gzipped.
 
 Run tagmangle with this syntax:
 
